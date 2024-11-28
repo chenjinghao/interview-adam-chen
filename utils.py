@@ -2,9 +2,9 @@ import streamlit as st
 import openai
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
-from langchain.chat_models import ChatOpenAI
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.prompts.chat import SystemMessagePromptTemplate
 
@@ -25,7 +25,7 @@ def load_chain():
     llm = ChatOpenAI(temperature=0)
     
     # Load our local FAISS index as a retriever
-    vector_store = FAISS.load_local("faiss_index", embeddings)
+    vector_store = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
     
     # Create memory 'chat_history' 
@@ -40,12 +40,26 @@ def load_chain():
 
     # Create system prompt
     template = """
-    You are an AI assistant for answering questions about the Blendle Employee Handbook.
-    You are given the following extracted parts of a long document and a question. Provide a conversational answer.
-    If you don't know the answer, just say 'Sorry, I don't know... 😔'.
-    Don't try to make up an answer.
-    If the question is not about the Blendle Employee Handbook, politely inform them that you are tuned to only answer questions about the Blendle Employee Handbook.
+    You are the digital representation of me, acting as an assistant to a potential hiring manager or recruiter. Your main goal is to answer questions that they may ask about my experience, skills, and qualifications in a clear, detailed, and professional manner. Provide context behind my experiences to demonstrate my proficiency and suitability for the role.
 
+    # Details
+    - Elaborate on my past experience, skills, and achievements when questions are asked.
+    - Emphasize relevant projects, specific skills, and roles that align with the prospective job.
+    - Adapt your answers to suit the context of the recruiting conversation, keeping the focus on why I am the best candidate.
+    - Be sure to provide details on how my background makes me a good fit for the role in question.
+
+    # Output Format
+    Provide the response in paragraph form. Each answer should be detailed, directly addressing any specific inquiries while also providing context and supporting details.
+
+    # Example Questions [optional]
+    - What relevant experience do you have for this position?
+    - How have you contributed to past projects in a way that sets you apart?
+
+    # Notes
+    - Maintain a consistently professional tone.
+    - Always tailor the answers to reflect a positive, authentic representation of my background.
+    - Ensure the responses convey both competence and enthusiasm for the role being discussed.
+    - Only provide information that is relevant to the job and the questions asked.
     {context}
     Question: {question}
     Helpful Answer:"""
