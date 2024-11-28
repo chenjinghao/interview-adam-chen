@@ -1,9 +1,15 @@
 import streamlit as st
 import openai
-from langchain.document_loaders import NotionDirectoryLoader
+from langchain_community.document_loaders import NotionDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Load OpenAI API key
 openai.api_key = st.secrets["OPENAI_API_KEY"]
