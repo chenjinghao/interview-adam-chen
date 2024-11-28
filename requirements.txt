@@ -1,4 +1,7 @@
 openai
 langchain
+langchain_openai
+langchain_community
+streamlit
 faiss-cpu
 tiktoken
